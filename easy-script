@@ -4,8 +4,8 @@ install)
 sudo apt  install awscli -y
 if [ ! -d "/home/$USER/easy-rsa/" ];
 then
-echo installing EasyRSA
-echo cloning from github
+echo Installing EasyRSA
+echo Cloning from github
 mkdir vpncerts
 git clone https://github.com/OpenVPN/easy-rsa.git
 cd easy-rsa/easyrsa3
@@ -17,9 +17,9 @@ else echo easyrsa already installed ,to create new vpnuser run: ./easy-script ad
 fi
 ;;
 adduser)
-echo enter username
+echo Enter username
 read varname
-echo creating vpnuser client cert for $varname
+echo Creating vpnuser client cert for $varname
 
 cd easy-rsa/easyrsa3
 ./easyrsa build-client-full $varname nopass
@@ -29,7 +29,7 @@ cp /home/$USER/easy-rsa/easyrsa3/pki/private/* /home/$USER/vpncerts
 cp /home/$USER/easy-rsa/easyrsa3/pki/*.crt /home/$USER/vpncerts
 ;;
 import-acm)
-echo enter region name  e,g af-south-1
+echo Enter region name  e,g af-south-1
 read varname
 # to ACM region $varname
 aws acm import-certificate --certificate fileb://vpncerts/server.crt --private-key fileb://vpncerts/server.key --certificate-chain fileb://vpncerts/ca.crt --region $varname
