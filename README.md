@@ -26,3 +26,10 @@ To add user to the VPN endpoint, run the script with the option `adduser`
 ```bash
 ./easy-script adduser
 ```
+
+
+To import certificate to ACM,
+run the script with the option `import-acm`
+```bash
+./easy-script import-acm
+```

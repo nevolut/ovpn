@@ -30,9 +30,10 @@ cp /home/$USER/easy-rsa/easyrsa3/pki/*.crt /home/$USER/vpncerts
 ;;
 import-acm)
 echo Enter region name  e,g af-south-1
-read varname
-# to ACM region $varname
-aws acm import-certificate --certificate fileb://vpncerts/server.crt --private-key fileb://vpncerts/server.key --certificate-chain fileb://vpncerts/ca.crt --region $varname
+read region
+echo Enter Common Name (eg: your user, host, or server name)
+read cn
+aws acm import-certificate --certificate fileb://vpncerts/$cn.crt --private-key fileb://vpncerts/$cn.key --certificate-chain fileb://vpncerts/ca.crt --region $region
 
 ;;
 revoke)
