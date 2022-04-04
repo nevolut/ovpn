@@ -1,54 +1,53 @@
 #!/bin/bash
-case $1 in
-install)
-sudo apt  install awscli -y
-if [ ! -d "/home/$USER/easy-rsa/" ];
-then
-echo Installing EasyRSA
-echo Cloning from github
-mkdir vpncerts
-git clone https://github.com/OpenVPN/easy-rsa.git
-cd easy-rsa/easyrsa3
-./easyrsa init-pki
+#git clone https://github.com/tendai-lino/easyrsa-automation.git
+# https://github.com
+# Copyright (c) 2020 Tendai-lino. Released under the MIT License
+case $1 in install)
+  sudo apt  install awscli -y
+  if [ ! -d "/home/$USER/easy-rsa/" ]; then
+    echo installing EasyRSA
+    echo cloning from github
+    mkdir vpncerts
+    git clone https://github.com/OpenVPN/easy-rsa.git
+    cd easy-rsa/easyrsa3
+    ./easyrsa init-pki
 
-./easyrsa build-ca nopass
-./easyrsa build-server-full server nopass
-else echo easyrsa already installed ,to create new vpnuser run: ./easy-script adduser
-fi
+    ./easyrsa build-ca nopass
+    ./easyrsa build-server-full server nopass
+    else echo easyrsa already installed, to create new vpnuser run: ./easy-script adduser
+  fi
 ;;
 adduser)
-echo Enter username
-read varname
-echo Creating vpnuser client cert for $varname
+  echo enter username
+  read varname
+  echo creating vpnuser client cert for $varname
 
-cd easy-rsa/easyrsa3
-./easyrsa build-client-full $varname nopass
+  cd easy-rsa/easyrsa3
+  ./easyrsa build-client-full $varname nopass
 
-cp /home/$USER/easy-rsa/easyrsa3/pki/issued/* /home/$USER/vpncerts
-cp /home/$USER/easy-rsa/easyrsa3/pki/private/* /home/$USER/vpncerts
-cp /home/$USER/easy-rsa/easyrsa3/pki/*.crt /home/$USER/vpncerts
+  cp /home/$USER/easy-rsa/easyrsa3/pki/issued/* /home/$USER/vpncerts
+  cp /home/$USER/easy-rsa/easyrsa3/pki/private/* /home/$USER/vpncerts
+  cp /home/$USER/easy-rsa/easyrsa3/pki/*.crt /home/$USER/vpncerts
 ;;
 import-acm)
-echo Enter region name  e,g af-south-1
-read region
-echo Enter Common Name (eg: your user, host, or server name)
-read cn
-aws acm import-certificate --certificate fileb://vpncerts/$cn.crt --private-key fileb://vpncerts/$cn.key --certificate-chain fileb://vpncerts/ca.crt --region $region
+  echo enter region name  e,g af-south-1
+  read varname
+  # to ACM region $varname
+  aws acm import-certificate --certificate fileb://vpncerts/server.crt --private-key fileb://vpncerts/server.key --certificate-chain fileb://vpncerts/ca.crt --region $varname
 
 ;;
 revoke)
 
-echo Enter username to revoke
-read varname
-(cd /home/$USER/easy-rsa/easyrsa3/ && ./easyrsa revoke $varname)
-;;
-gen-crl)
+  echo Enter username to revoke
+  read varname
+  (cd /home/$USER/easy-rsa/easyrsa3/ && ./easyrsa revoke $varname)
+  ;;
+  gen-crl)
 
-(cd /home/$USER/easy-rsa/easyrsa3/ && ./easyrsa gen-crl)
-
+  (cd /home/$USER/easy-rsa/easyrsa3/ && ./easyrsa gen-crl)
 
 ;;
 *)
-echo usage : ./easy-script options: install, adduser, import-acm, revoke, gen-crl
+  echo usage : ./easy-script options: install ,adduser ,import-acm, revoke, gen-crl
 ;;
 esac
